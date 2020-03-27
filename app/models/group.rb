@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'net/imap'
+
 class Group < ActiveRecord::Base
   self.ignored_columns = %w{
     automatic_membership_retroactive
