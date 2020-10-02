@@ -34,6 +34,11 @@ class TopicCreator
 
   def create
     topic = Topic.new(setup_topic_params)
+    if opts[:reward_integral].present? && opts[:reward_integral].to_i > 0
+      if user.try(:integral).try(:amount).to_i < opts[:reward_integral].to_i
+        return rollback_with!(topic, :reward_score_notenough)
+      end
+    end
     setup_tags(topic)
 
     if fields = @opts[:custom_fields]
@@ -122,6 +127,7 @@ class TopicCreator
 
     topic_params[:pinned_at] = convert_time(@opts[:pinned_at]) if @opts[:pinned_at].present?
     topic_params[:pinned_globally] = @opts[:pinned_globally] if @opts[:pinned_globally].present?
+    topic_params[:reward_integral] = @opts[:reward_integral] if @opts[:reward_integral].present?
 
     if SiteSetting.topic_featured_link_enabled && @opts[:featured_link].present? && @guardian.can_edit_featured_link?(topic_params[:category_id])
       topic_params[:featured_link] = @opts[:featured_link]

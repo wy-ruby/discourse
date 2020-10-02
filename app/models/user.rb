@@ -96,6 +96,8 @@ class User < ActiveRecord::Base
   has_many :ignored_users, through: :ignored_user_records
 
   belongs_to :uploaded_avatar, class_name: 'Upload'
+  has_one :integral, dependent: :destroy
+  has_many :integral_details, dependent: :destroy
 
   delegate :last_sent_email_address, to: :email_logs
 
@@ -106,6 +108,7 @@ class User < ActiveRecord::Base
   validates :name, user_full_name: true, if: :will_save_change_to_name?, length: { maximum: 255 }
   validates :ip_address, allowed_ip_address: { on: :create, message: :signup_not_allowed }
   validates :primary_email, presence: true
+  validates :phone_number, uniqueness: true, allow_blank: true
   validates_associated :primary_email, message: -> (_, user_email) { user_email[:value]&.errors[:email]&.first }
 
   after_initialize :add_trust_level

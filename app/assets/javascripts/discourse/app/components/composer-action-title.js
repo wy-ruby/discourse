@@ -5,6 +5,7 @@ import discourseComputed from "discourse-common/utils/decorators";
 import {
   PRIVATE_MESSAGE,
   CREATE_TOPIC,
+  CREATE_REWARD_TOPIC,
   CREATE_SHARED_DRAFT,
   REPLY,
   EDIT,
@@ -15,6 +16,7 @@ import { iconHTML } from "discourse-common/lib/icon-library";
 const TITLES = {
   [PRIVATE_MESSAGE]: "topic.private_message",
   [CREATE_TOPIC]: "topic.create_long",
+  [CREATE_REWARD_TOPIC]: "topic.create_reward_long",
   [CREATE_SHARED_DRAFT]: "composer.create_shared_draft",
   [EDIT_SHARED_DRAFT]: "composer.edit_shared_draft"
 };

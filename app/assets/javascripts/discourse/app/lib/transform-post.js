@@ -80,7 +80,8 @@ export function transformBasicPost(post) {
     locked: post.locked,
     userCustomFields: post.user_custom_fields,
     readCount: post.readers_count,
-    canPublishPage: false
+    canPublishPage: false,
+    setBestReply: false
   };
 
   _additionalAttributes.forEach(a => (postAtts[a] = post[a]));
@@ -117,6 +118,11 @@ export default function transformPost(
   postAtts.isSmallAction =
     postType === postTypes.small_action || post.action_code === "split_topic";
   postAtts.canBookmark = !!currentUser;
+  postAtts.canSetBest = topic.user_id !== post.user_id;
+  postAtts.showBestReply = topic.accept_post_id === post.id;
+  postAtts.hasBestReply = !!topic.accept_post_id;
+  postAtts.canShowBestButton = currentUser &&
+    (topic.user_id === currentUser.id || currentUser && currentUser.get("canManageTopic"))
   postAtts.canManage = currentUser && currentUser.get("canManageTopic");
   postAtts.canViewRawEmail =
     currentUser && (currentUser.id === post.user_id || currentUser.staff);

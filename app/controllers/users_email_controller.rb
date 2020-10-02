@@ -65,7 +65,7 @@ class UsersEmailController < ApplicationController
       return render_json_error(updater.errors.full_messages)
     end
 
-    render body: nil
+    render json: success_json
   rescue RateLimiter::LimitExceeded
     render_json_error(I18n.t("rate_limiter.slow_down"))
   end

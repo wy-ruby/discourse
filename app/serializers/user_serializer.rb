@@ -18,7 +18,8 @@ class UserSerializer < UserCardSerializer
              :associated_accounts,
              :profile_background_upload_url,
              :can_upload_profile_header,
-             :can_upload_user_card_background
+             :can_upload_user_card_background,
+             :user_integral
 
   has_one :invited_by, embed: :object, serializer: BasicUserSerializer
   has_many :groups, embed: :object, serializer: BasicGroupSerializer
@@ -151,6 +152,10 @@ class UserSerializer < UserCardSerializer
 
   def bio_raw
     object.user_profile.bio_raw
+  end
+
+  def user_integral
+    object.integral.try(:amount).to_i
   end
 
   def bio_cooked

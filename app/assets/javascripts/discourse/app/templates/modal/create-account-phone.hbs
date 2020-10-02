@@ -4,13 +4,7 @@
     {{#d-modal-body title="create_account.title" class=modalBodyClasses}}
 
       {{#unless hasAuthOptions}}
-        {{login-buttons
-          showCreateWithPhoneLink = showCreateWithPhoneLink
-          showCreateWithEmailLink = showCreateWithEmailLink
-          phoneCreate=(action "phoneCreate")
-          emailCreate=(action "emailCreate")
-          externalLogin=(action "externalLogin")
-        }}
+        {{login-buttons externalLogin=(action "externalLogin")}}
       {{/unless}}
 
       {{#if skipConfirmation}}
@@ -22,47 +16,6 @@
           <form>
             <table>
               <tbody>
-                {{#if usePhoneCreate}}
-                  <tr class="input">
-                    <td class="label"><label for="new-account-phone-number">{{i18n "user.phone.number"}}</label></td>
-                    <td>
-                      <label>
-                        {{input type="text" value=accountPhoneNumber id="new-account-phone-number" name="phone_number"}}
-                      </label>
-                    </td>
-                  </tr>
-                  <tr class="instructions">
-                    <td></td>
-                    {{input-tip validation=phoneNumberValidation id="account-phone-number-validation"}}
-                    <td>
-                      <label>{{i18n "user.phone.instructions"}}</label>
-                    </td>
-                  </tr>
-
-                  <tr class="input">
-                    <td class="label"><label for="new-account-code">{{i18n "user.phone.code"}}</label></td>
-                    <td>
-                      <label>
-                        {{d-button
-                          class="btn-default"
-                          label="user.phone.send_code"
-                          id="click-send-auth-code"
-                          value=clickSendCode
-                          validation=sendCodeValidation
-                          action=(action "sendAuthCode")
-                          disabled=codeSend
-                        }}
-                      </label>
-                      {{input type="text" value=accountCode id="new-account-code" name="code"}}
-                    </td>
-                  </tr>
-                  <tr class="instructions">
-                    <td></td>
-                    {{input-tip validation=codeValidation id="account-phone-code"}}
-                    <td><label>{{i18n "user.phone.input_code"}}</label></td>
-                  </tr>
-                {{/if}}
-
                 <tr class="input create-account-email">
                   <td class="label"><label for="new-account-email">{{i18n "user.email.title"}}</label></td>
                   <td>
@@ -77,6 +30,37 @@
                   <td></td>
                   {{input-tip validation=emailValidation id="account-email-validation"}}
                   <td><label>{{i18n "user.email.instructions"}}</label></td>
+                </tr>
+
+                <tr class="input">
+                  <td class="label"><label for="new-account-phone-number">{{i18n "user.phone.number"}}</label></td>
+                  <td>
+                    <label>
+                      {{input type="text" value=accountPhoneNumber id="new-account-phone-number" name="phone_number"}}
+                    </label>
+                  </td>
+                </tr>
+                <tr class="instructions">
+                  <td></td>
+                  {{input-tip validation=accountPhoneNumber id="account-phone-number-validation"}}
+                  <td>
+                    <label>{{i18n "user.phone.instructions"}}</label>
+                  </td>
+                </tr>
+
+                <tr class="input">
+                  <td class="label"><label for="new-account-code">{{i18n "user.phone.code"}}</label></td>
+                  <td>
+                    <label>
+                      {{d-button class="btn-default" label="user.phone.send_code"}}
+                    </label>
+                    {{input type="text" value=accountCode id="new-account-code" name="code"}}
+                  </td>
+                </tr>
+                <tr class="instructions">
+                  <td></td>
+                  {{input-tip validation=accountCode id="account-phone-code"}}
+                  <td><label>{{i18n "user.phone.input_code"}}</label></td>
                 </tr>
 
                 <tr class="input">
@@ -96,26 +80,23 @@
                 </tr>
 
                 {{#if fullnameRequired}}
-                  {{#unless usePhoneCreate}}
-                    <tr class="input">
-                      <td class="label">
-                        <label for="new-account-name">{{i18n "user.name.title"}}</label>
-                      </td>
-                      <td>
-                        {{#if nameDisabled}}
-                          <span class="value">{{accountName}}</span>
-                        {{else}}
-                          {{text-field value=accountName id="new-account-name"}}
-                        {{/if}}
-                      </td>
-                    </tr>
-
-                    <tr class="instructions">
-                      <td></td>
-                      {{input-tip validation=nameValidation}}
-                      <td><label>{{nameInstructions}}</label></td>
-                    </tr>
-                  {{/unless}}
+                  <tr class="input">
+                    <td class="label">
+                      <label for="new-account-name">{{i18n "user.name.title"}}</label>
+                    </td>
+                    <td>
+                      {{#if nameDisabled}}
+                        <span class="value">{{accountName}}</span>
+                      {{else}}
+                        {{text-field value=accountName id="new-account-name"}}
+                      {{/if}}
+                    </td>
+                  </tr>
+                  <tr class="instructions">
+                    <td></td>
+                    {{input-tip validation=nameValidation}}
+                    <td><label>{{nameInstructions}}</label></td>
+                  </tr>
                 {{/if}}
 
                 {{plugin-outlet

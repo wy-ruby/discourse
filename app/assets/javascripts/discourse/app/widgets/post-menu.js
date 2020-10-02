@@ -91,6 +91,29 @@ registerButton("read", attrs => {
   }
 });
 
+registerButton("best", attrs => {
+  if (attrs.canSetBest && !attrs.hasBestReply && attrs.canShowBestButton) {
+    return {
+      action: "bestPost",
+      className: "best",
+      title: "post.controls.best_reply",
+      icon: attrs.setBestReply ? "smile": "far-smile",
+    };
+  }
+});
+
+registerButton("best_flag", attrs => {
+  if (attrs.showBestReply) {
+    return {
+      id: "hand-flag",
+      action: "hand_flag",
+      className: "hand-peace",
+      title: "post.controls.best_reply",
+      icon: "hand-peace",
+    };
+  }
+});
+
 function likeCount(attrs) {
   const count = attrs.likeCount;
 

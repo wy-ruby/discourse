@@ -18,6 +18,7 @@ import { SECOND_FACTOR_METHODS } from "discourse/models/user";
 import { getWebauthnCredential } from "discourse/lib/webauthn";
 import bootbox from "bootbox";
 import cookie, { removeCookie } from "discourse/lib/cookie";
+import User from "discourse/models/user";
 
 // This is happening outside of the app via popup
 const AuthErrors = [
@@ -35,6 +36,7 @@ export default Controller.extend(ModalFunctionality, {
 
   loggingIn: false,
   loggedIn: false,
+  usePhoneLogin: false,
   processingEmailLink: false,
   showLoginButtons: true,
   showSecondFactor: false,
@@ -42,6 +44,7 @@ export default Controller.extend(ModalFunctionality, {
 
   canLoginLocal: setting("enable_local_logins"),
   canLoginLocalWithEmail: setting("enable_local_logins_via_email"),
+  canLoginLocalWithPhone: true,
   loginRequired: alias("application.loginRequired"),
   secondFactorMethod: SECOND_FACTOR_METHODS.TOTP,
 
@@ -53,6 +56,9 @@ export default Controller.extend(ModalFunctionality, {
       showSecondFactor: false,
       showSecurityKey: false,
       showLoginButtons: true,
+      usePhoneLogin: false,
+      clickSendCode: false,
+      codeSend: false,
       awaitingApproval: false
     });
   },
@@ -104,29 +110,52 @@ export default Controller.extend(ModalFunctionality, {
     return canLoginLocalWithEmail && !processingEmailLink;
   },
 
+  @discourseComputed("canLoginLocalWithPhone")
+  showLoginWithPhoneLink(canLoginLocalWithPhone) {
+    return canLoginLocalWithPhone
+  },
+
+  @discourseComputed("canLoginLocalWithPhone")
+  showLoginWithAccountLink(canLoginLocalWithPhone) {
+    return canLoginLocalWithPhone
+  },
+
+  @discourseComputed("codeSend")
+  codeSend() {
+    if (this.codeSend) return true;
+    return false;
+  },
+
   actions: {
     login() {
       if (this.loginDisabled) {
         return;
       }
 
-      if (isEmpty(this.loginName) || isEmpty(this.loginPassword)) {
-        this.flash(I18n.t("login.blank_username_or_password"), "error");
-        return;
+      let data = {
+        login: this.loginName,
+        password: this.loginPassword,
+        second_factor_token:
+          this.securityKeyCredential || this.secondFactorToken,
+        second_factor_method: this.secondFactorMethod,
+        timezone: moment.tz.guess()
+      }
+
+      if(!this.usePhoneLogin){
+        if (isEmpty(this.loginName) || isEmpty(this.loginPassword)) {
+          this.flash(I18n.t("login.blank_username_or_password"), "error");
+          return;
+        }
+      } else{
+        data.type = "phone"
+        data.code = this.accountCode
       }
 
       this.set("loggingIn", true);
 
       ajax("/session", {
         type: "POST",
-        data: {
-          login: this.loginName,
-          password: this.loginPassword,
-          second_factor_token:
-            this.securityKeyCredential || this.secondFactorToken,
-          second_factor_method: this.secondFactorMethod,
-          timezone: moment.tz.guess()
-        }
+        data: data
       }).then(
         result => {
           // Successful login
@@ -310,6 +339,57 @@ export default Controller.extend(ModalFunctionality, {
         })
         .catch(e => this.flash(extractError(e), "error"))
         .finally(() => this.set("processingEmailLink", false));
+    },
+
+    phoneLogin() {
+      this.set("usePhoneLogin", true);
+    },
+
+    accountLogin() {
+      this.set("usePhoneLogin", false);
+    },
+
+    sendAuthCode() {
+      this.set("clickSendCode", true)
+      const attrs = this.getProperties(
+        "loginName"
+      );
+      attrs.type = 'login'
+      return User.sendLoginCode(attrs).then(
+        result => {
+          this.set("codeSend", true);
+          if (result.success) {
+            this.set("codeSend", true);
+            let countdown=60;
+            let obj = $("#click-send-login-auth-code span");
+            function settime(obj) {
+              if (countdown == 0) {
+                obj.html(I18n.t("user.phone.send_code"));
+                $("#click-send-login-auth-code").attr("disabled",false)
+                countdown = 60;
+                clearInterval(over_time)
+                return;
+              } else {
+                // this.set("codeSend", true);
+                obj.html(I18n.t("user.phone.send_again") + "(" + countdown + ")");
+                countdown--;
+              }
+            }
+            let over_time = setInterval(function(){
+              settime(obj)
+            }, 1000)
+          } else {
+            this.set("codeSend", false);
+            removeCookie("destination_url");
+            return this.flash(result.messages);
+          }
+        },
+        () => {
+          this.set("codeSend", false);
+          removeCookie("destination_url");
+          return this.flash(I18n.t("create_account.send_error"), "error");
+        }
+      )
     },
 
     authenticateSecurityKey() {

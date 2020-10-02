@@ -8,13 +8,37 @@
           <table>
             <tbody>
               <tr>
-                <td><label for="login-account-name">{{i18n "login.username"}}</label></td>
-                <td>{{text-field value=loginName placeholderKey="login.email_placeholder" id="login-account-name" autocorrect="off" autocapitalize="off" autofocus="autofocus" disabled=disableLoginFields}}</td>
+                {{#if usePhoneLogin}}
+                  <td><label for="login-account-name">{{i18n "login.phone"}}</label></td>
+                  <td>{{text-field value=loginName placeholderKey="login.phone_placeholder" id="login-account-name" autocorrect="off" autocapitalize="off" autofocus="autofocus" disabled=disableLoginFields}}</td>
+                  <td>{{text-field type="hidden" value=typeName}}</td>
+                {{else}}
+                  <td><label for="login-account-name">{{i18n "login.username"}}</label></td>
+                  <td>{{text-field value=loginName placeholderKey="login.email_placeholder" id="login-account-name" autocorrect="off" autocapitalize="off" autofocus="autofocus" disabled=disableLoginFields}}</td>
+                {{/if}}
               </tr>
               <tr>
-                <td><label for="login-account-password">{{i18n "login.password"}}</label></td>
-                <td>{{password-field value=loginPassword type="password" id="login-account-password" maxlength="200" capsLockOn=capsLockOn disabled=disableLoginFields}}</td>
-                <td><a href id="forgot-password-link" {{action "forgotPassword"}}>{{i18n "forgot_password.action"}}</a></td>
+                {{#if usePhoneLogin}}
+                  <td class="label"><label>{{i18n "user.phone.code"}}</label></td>
+                  <td>
+                    <label>
+                      {{d-button
+                        class="btn-default"
+                        label="user.phone.send_code"
+                        value=clickSendCode
+                        id="click-send-login-auth-code"
+                        validation=sendCodeValidation
+                        action=(action "sendAuthCode")
+                        disabled=codeSend
+                      }}
+                    </label>
+                    {{input type="text" value=accountCode capsLockOn=capsLockOn name="code"}}
+                  </td>
+                {{else}}
+                  <td><label for="login-account-password">{{i18n "login.password"}}</label></td>
+                  <td>{{password-field value=loginPassword type="password" id="login-account-password" maxlength="200" capsLockOn=capsLockOn disabled=disableLoginFields}}</td>
+                  <td><a href id="forgot-password-link" {{action "forgotPassword"}}>{{i18n "forgot_password.action"}}</a></td>
+                {{/if}}
               </tr>
               <tr>
                 <td></td>
@@ -49,8 +73,12 @@
     {{#if showLoginButtons}}
       {{login-buttons
         showLoginWithEmailLink=showLoginWithEmailLink
+        showLoginWithPhoneLink=showLoginWithPhoneLink
+        showLoginWithAccountLink=showLoginWithAccountLink
         processingEmailLink=processingEmailLink
         emailLogin=(action "emailLogin")
+        phoneLogin=(action "phoneLogin")
+        accountLogin=(action "accountLogin")
         externalLogin=(action "externalLogin")}}
     {{/if}}
   {{/d-modal-body}}

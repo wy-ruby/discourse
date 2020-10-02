@@ -174,7 +174,7 @@ basic:
   post_menu:
     client: true
     type: list
-    default: "read|like|share|flag|edit|bookmark|delete|admin|reply"
+    default: "read|like|share|flag|edit|bookmark|delete|admin|reply|best|best_flag"
     allow_any: false
     choices:
       - read
@@ -186,6 +186,8 @@ basic:
       - bookmark
       - admin
       - reply
+      - best
+      - best_flag
   post_menu_hidden_items:
     client: true
     type: list

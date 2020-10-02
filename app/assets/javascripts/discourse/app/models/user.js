@@ -1020,9 +1020,14 @@ User.reopenClass(Singleton, {
   },
 
   createAccount(attrs) {
+    if (!attrs.accountCode) {
+      attrs.accountCode = ""
+    }
     let data = {
       name: attrs.accountName,
       email: attrs.accountEmail,
+      phone_number: attrs.accountPhoneNumber,
+      auth_code: attrs.accountCode,
       password: attrs.accountPassword,
       username: attrs.accountUsername,
       password_confirmation: attrs.accountPasswordConfirm,
@@ -1039,7 +1044,31 @@ User.reopenClass(Singleton, {
       data,
       type: "POST"
     });
+  },
+
+  sendCode(attrs) {
+    let data = {
+      phone_number: attrs.accountPhoneNumber
+    };
+
+    return ajax(userPath("send_code"), {
+      data,
+      type: "POST"
+    });
+  },
+
+  sendLoginCode(attrs) {
+    let data = {
+      phone_number: attrs.loginName,
+      type: attrs.type
+    };
+
+    return ajax(userPath("send_code"), {
+      data,
+      type: "POST"
+    });
   }
+
 });
 
 if (typeof Discourse !== "undefined") {

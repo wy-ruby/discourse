@@ -1173,6 +1173,16 @@ en:
         title: "Featured Topic"
         instructions: "A link to this topic will be on your user card, and profile."
 
+      phone:
+        number: "Phone number"
+        code: "Verification code"
+        instructions: "Your phone number(optional)"
+        send_code: "Send verification code"
+        input_code: "Please enter the mobile phone verification code(optional)"
+        authenticated: "Your phone number has been authenticated by %{provider}"
+        ok: "We will phone number you to confirm"
+        invalid: "Please enter a valid phone number"
+
       email:
         title: "Email"
         primary: "Primary Email"
@@ -1220,6 +1230,7 @@ en:
         title: "Username"
         instructions: "unique, no spaces, short"
         short_instructions: "People can mention you as @%{username}"
+        integral: "Integral:"
         available: "Your username is available"
         not_available: "Not available. Try %{suggestion}?"
         not_available_no_suggestion: "Not available"
@@ -1602,6 +1613,7 @@ en:
       disclaimer: "By registering, you agree to the <a href='%{privacy_link}' target='blank'>privacy policy</a> and <a href='%{tos_link}' target='blank'>terms of service</a>."
       title: "Create New Account"
       failed: "Something went wrong, perhaps this email is already registered, try the forgot password link"
+      send_error: "Verification code sending failed，Please try again later"
 
     forgot_password:
       title: "Password Reset"
@@ -1637,6 +1649,7 @@ en:
       title: "Log In"
       username: "User"
       password: "Password"
+      login_by_phone: "Login By Phone"
       second_factor_title: "Two Factor Authentication"
       second_factor_description: "Please enter the authentication code from your app:"
       second_factor_backup: "Log in using a backup code"
@@ -2212,6 +2225,8 @@ en:
         other: "%{count} posts in topic"
       create: "New Topic"
       create_long: "Create a new Topic"
+      create_reward_long: "Create a new reward Topic"
+      reward_score: "【 Reward %{score} integral 】"
       open_draft: "Open Draft"
       private_message: "Start a message"
       archive_message:
@@ -2743,6 +2758,9 @@ en:
         like: "like this post"
         has_liked: "you've liked this post"
         read_indicator: "members who read this post"
+        best_reply: "best reply"
+        operation_only_one: "note: You can only set an optimal reply and cannot modify or cancel"
+        already_set_best_reply: "You have already set the best reply"
         undo_like: "undo like"
         edit: "edit this post"
         edit_action: "Edit"

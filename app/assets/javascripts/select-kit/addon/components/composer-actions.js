@@ -3,6 +3,7 @@ import DropdownSelectBoxComponent from "select-kit/components/dropdown-select-bo
 import {
   PRIVATE_MESSAGE,
   CREATE_TOPIC,
+  CREATE_REWARD_TOPIC,
   CREATE_SHARED_DRAFT,
   REPLY,
   EDIT
@@ -160,6 +161,21 @@ export default DropdownSelectBoxComponent.extend({
         ),
         icon: "envelope",
         id: "reply_as_private_message"
+      });
+    }
+
+    if (
+      this.action !== CREATE_REWARD_TOPIC && !this.isEditing
+    ) {
+      items.push({
+        name: I18n.t(
+          "composer.composer_actions.reward_topic.label"
+        ),
+        description: I18n.t(
+          "composer.composer_actions.reward_topic.desc"
+        ),
+        icon: "coffee",
+        id: "reward_topic"
       });
     }
 
@@ -342,6 +358,7 @@ export default DropdownSelectBoxComponent.extend({
     this._replyFromExisting(options, _postSnapshot, _topicSnapshot);
   },
 
+
   _switchCreate(options, action) {
     options.action = action;
     options.categoryId = this.get("composerModel.categoryId");
@@ -353,6 +370,10 @@ export default DropdownSelectBoxComponent.extend({
 
   createTopicSelected(options) {
     this._switchCreate(options, CREATE_TOPIC);
+  },
+
+  rewardTopicSelected(options) {
+    this._switchCreate(options, CREATE_REWARD_TOPIC);
   },
 
   sharedDraftSelected(options) {

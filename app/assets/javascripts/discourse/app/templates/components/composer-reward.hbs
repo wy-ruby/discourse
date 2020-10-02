@@ -1,0 +1,12 @@
+{{text-field value=composer.reward_integral
+             tabindex="2"
+             id="is_reward"
+             maxLength=titleMaxLength
+             required=true
+             pattern="^[0-9]*$"
+             placeholderKey=composer.rewardPlaceholder
+             aria-label=(I18n composer.rewardPlaceholder)
+             disabled=disabled
+             autocomplete="discourse"}}
+
+{{popup-input-tip validation=validation}}

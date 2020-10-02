@@ -499,6 +499,7 @@ class UsersController < ApplicationController
 
   def create
     params.require(:email)
+    params.require(:phone_number) if params[:phone_number].present?
     params.require(:username)
     params.require(:invite_code) if SiteSetting.require_invite_code
     params.permit(:user_fields)
@@ -521,6 +522,14 @@ class UsersController < ApplicationController
 
     if clashing_with_existing_route?(params[:username]) || User.reserved_username?(params[:username])
       return fail_with("login.reserved_username")
+    end
+
+    if params[:phone_number].present? && params[:auth_code].present?
+      session_verify_code = secure_session["register_#{params[:phone_number]}"]
+      return fail_with("login.please_send_code") if session_verify_code.blank?
+      if session_verify_code.split("_").first != params[:auth_code]
+        return fail_with("login.verify_code_error")
+      end
     end
 
     params[:locale] ||= I18n.locale unless current_user
@@ -597,7 +606,7 @@ class UsersController < ApplicationController
       # ensure their email is confirmed and
       # add them to the review queue if they need to be approved
       user.activate if user.active?
-
+      send_user_to_outside(user, params[:password]) if is_api?
       render json: {
         success: true,
         active: user.active?,
@@ -621,16 +630,23 @@ class UsersController < ApplicationController
       errors = user.errors.to_hash
       errors[:email] = errors.delete(:primary_email) if errors[:primary_email]
 
+      if errors[:phone_number]&.first == I18n.t("errors.messages.taken")
+        error_full_message = I18n.t("errors.messages.phone_number_exist")
+      else
+        error_full_message = user.errors.full_messages.join("\n")
+      end
+
       render json: {
         success: false,
         message: I18n.t(
           'login.errors',
-          errors: user.errors.full_messages.join("\n")
+          errors: error_full_message
         ),
         errors: errors,
         values: {
           name: user.name,
           username: user.username,
+          phone_number: user.phone_number,
           email: user.primary_email&.email
         },
         is_developer: UsernameCheckerService.is_developer?(user.email)
@@ -641,6 +657,66 @@ class UsersController < ApplicationController
       success: false,
       message: I18n.t("login.something_already_taken")
     }
+  end
+
+  def send_user_to_outside(user, password)
+    if Rails.env.production?
+      url = "http://sellnet.gg.com/api/forum/register"
+    else
+      url = "http://47.98.132.22:3000/mock/35/api/forum/register"
+    end
+
+    data = {
+        :username => user.username,
+        :phone => user.phone_number,
+        :password => password,
+        :email => user.email,
+        :icon => "",
+        :sex => 3
+    }
+    Excon.post(url,
+               :body => URI.encode_www_form(data),
+               :headers => { "Content-Type" => "application/json"})
+  end
+
+  def send_auth_code
+    params.permit(:phone_number)
+    phone_number = params[:phone_number]
+    if params[:type] == "login"
+      user = User.find_by_phone_number(phone_number)
+      if user.blank?
+        render json: {messages: I18n.t("errors.messages.notfound"), success: false}
+      end
+    end
+    phone_number_session = secure_session["login_#{phone_number}"]
+    if phone_number_session.present? && (Time.now.to_i - phone_number_session.split("_").last.to_i) < 60
+      render json: {messages: I18n.t("errors.messages.frequent"), success: false}
+    else
+      if params[:type] == "login"
+        template_param = "SMS_202805110"
+        key = "login_#{phone_number}"
+      else
+        template_param = "SMS_202750036"
+        key = "register_#{phone_number}"
+      end
+      out_id = {"code" => rand(100000..999999)}.to_json
+      send_result = Aliyun::Sms.send(phone_number, template_param, out_id)
+      result = JSON.parse(send_result.response_body)
+      # result = {
+      #     "Message" => "OK",
+      #     "RequestId" => "291DD881-68B5-4790-8072-C22BB00CE440",
+      #     "BizId" => "907801700484911568^0",
+      #     "Code" => "OK"
+      # }
+      if result["Code"] == "OK"
+        send_code_time = Time.now.to_i
+        Rails.logger.info("----------#{JSON.parse(out_id)['code']}-----#{key}------")
+        secure_session.set(key, "#{JSON.parse(out_id)['code']}_#{send_code_time}", expires: 3.minutes)
+        render json: {success: true}
+      else
+        render json: {messages: I18n.t("errors.messages.send_code_error"), success: false}
+      end
+    end
   end
 
   def get_honeypot_value
@@ -1576,6 +1652,7 @@ class UsersController < ApplicationController
     permitted = [
       :name,
       :email,
+      :phone_number,
       :password,
       :username,
       :title,

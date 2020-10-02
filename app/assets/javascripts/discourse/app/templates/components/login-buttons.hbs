@@ -19,3 +19,35 @@
     icon="far-envelope"
     class="login-with-email-button"}}
 {{/if}}
+
+{{#if showLoginWithPhoneLink}}
+  {{d-button
+    action=phoneLogin
+    label="login.login_by_phone"
+    icon="mobile"
+    class="login-with-phone-button"}}
+{{/if}}
+
+{{#if showLoginWithAccountLink}}
+  {{d-button
+    action=accountLogin
+    label="login.login_by_username"
+    icon="users"
+    class="login-with-account-button"}}
+{{/if}}
+
+{{#if showCreateWithPhoneLink}}
+  {{d-button
+    action=phoneCreate
+    label="login.create_by_phone"
+    icon="mobile"
+    class="create-with-phone-button"}}
+{{/if}}
+
+{{#if showCreateWithEmailLink}}
+  {{d-button
+    action=emailCreate
+    label="login.create_by_email"
+    icon="far-envelope"
+    class="create-with-email-button"}}
+{{/if}}

@@ -109,6 +109,12 @@ export function emailValid(email) {
   return re.test(email);
 }
 
+export function phoneNumberValid(phoneNumber) {
+  // see:  http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
+  const re = /^1[3456789]\d{9}$/;
+  return re.test(phoneNumber);
+}
+
 export function extractDomainFromUrl(url) {
   if (url.indexOf("://") > -1) {
     url = url.split("/")[2];

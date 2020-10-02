@@ -36,6 +36,16 @@ export function loadTopicView(topic, args) {
   return PreloadStore.getAndRemove(`topic_${topic.id}`, () =>
     ajax(jsonUrl, { data })
   ).then(json => {
+    if (json.accept_post_id !== null) {
+      let best_replies_num = json.post_stream.posts.findIndex(x => x.id == json.accept_post_id)
+      if (best_replies_num != 1) {
+        arraymove(json.post_stream.posts, best_replies_num, 1)
+      }
+    }
+    if (json.reward_integral > 0) {
+      json.fancy_title = "<span style='color:#43e3e1; font-weight:bold'>" +
+        I18n.t("topic.reward_score",{score: json.reward_integral}) + "</span>" + json.fancy_title
+    }
     topic.updateFromJson(json);
     return json;
   });
@@ -840,6 +850,12 @@ function moveResult(result) {
     return result;
   }
   throw new Error("error moving posts topic");
+}
+
+function arraymove(arr, fromIndex, toIndex) {
+  let element = arr[fromIndex];
+  arr.splice(fromIndex, 1);
+  arr.splice(toIndex, 0, element);
 }
 
 export function movePosts(topicId, data) {

@@ -245,6 +245,7 @@ class Topic < ActiveRecord::Base
 
   belongs_to :image_upload, class_name: 'Upload'
   has_many :topic_thumbnails, through: :image_upload
+  has_many :integral_details
 
   # When we want to temporarily attach some data to a forum topic (usually before serialization)
   attr_accessor :user_data
@@ -314,6 +315,15 @@ class Topic < ActiveRecord::Base
   end
 
   after_create do
+    Integral.increase_integral(user.id, self.id, Integral::POST_TOPIC_SCORE, IntegralDetail.integral_get_way[:post_topic], "topic")
+
+    if self[:reward_integral].present? && self[:reward_integral] > 0
+      Integral.increase_integral_unconditional(user.id,
+                                               self.id,
+                                               -(self.reward_integral.to_i),
+                                               IntegralDetail.integral_get_way[:sponsor_reward])
+    end
+
     unless skip_callbacks
       changed_to_category(category)
       advance_draft_sequence

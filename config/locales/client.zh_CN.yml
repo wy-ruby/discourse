@@ -1055,6 +1055,18 @@ zh_CN:
       change_featured_topic:
         title: "精选主题"
         instructions: "此主题的链接会显示在你的用户卡片和资料中。"
+      phone:
+        number: "手机号"
+        code: "验证码"
+        instructions: "您的手机号"
+        send_code: "发送验证码"
+        has_send: "验证码已发送"
+        input_code: "请输入手机验证码"
+        authenticated: "你的手机号已被%{provider}验证过了"
+        ok: "将通过该手机号验证确认"
+        invalid: "请填写正确的手机号"
+        exist: "该手机号已经注册过了"
+        send_again: "重新发送"
       email:
         title: "邮箱"
         primary: "主邮箱"
@@ -1099,6 +1111,8 @@ zh_CN:
         title: "用户名"
         instructions: "独一无二，没有空格，简短"
         short_instructions: "其他人可以用 @%{username} 来提及你"
+        integral: "积分:"
+        phone_number: "手机号"
         available: "用户名可用"
         not_available: "不可用。试试 %{suggestion} ？"
         not_available_no_suggestion: "不可用"
@@ -1428,6 +1442,7 @@ zh_CN:
       disclaimer: "注册即表示你同意<a href='%{privacy_link}' target='blank'>隐私策略</a>和<a href='%{tos_link}' target='blank'>服务条款</a>。"
       title: "创建新账户"
       failed: "出问题了，有可能这个邮箱已经被注册了。试试忘记密码链接？"
+      send_error: "验证码发送失败，请稍后重试。"
     forgot_password:
       title: "重置密码"
       action: "我忘记了密码"
@@ -1444,7 +1459,7 @@ zh_CN:
       button_help: "帮助"
     email_login:
       link_label: "给我通过邮件发送一个登录链接"
-      button_label: "通过邮件"
+      button_label: "通过发送邮件"
       emoji: "挂锁表情符号"
       complete_username: "如果有一个与用户名<b>%{username}</b>相匹配的账户，你很快就会收到一封带有登录链接的电子邮件。"
       complete_email: "如果<b>%{email}</b>与账户相匹配，你很快就会收到一封带有登录链接的电子邮件。"
@@ -1459,6 +1474,12 @@ zh_CN:
       title: "登录"
       username: "用户"
       password: "密码"
+      phone: "手机号"
+      login_by_phone: "通过手机验证码"
+      create_by_phone: "手机号注册"
+      create_by_email: "邮箱注册"
+      login_by_username: "通过邮箱/用户名"
+      phone_placeholder: "注册绑定的手机号"
       second_factor_title: "双重验证"
       second_factor_description: "请输入来自 app 的验证码："
       second_factor_backup: "使用备用码登录"
@@ -1675,6 +1696,9 @@ zh_CN:
       users_placeholder: "添加用户"
       title_placeholder: "一句话概况讨论内容…"
       title_or_link_placeholder: "输入标题，或粘贴一个链接"
+      is_reward_score: "是否悬赏积分"
+      reward_score: "悬赏积分:"
+      reward_placeholder: "输入悬赏的积分"
       edit_reason_placeholder: "编辑理由"
       topic_featured_link_placeholder: "在标题里输入链接"
       remove_featured_link: "从主题中移除链接。"
@@ -1741,6 +1765,9 @@ zh_CN:
         reply_as_private_message:
           label: 新消息
           desc: 新建一个私信
+        reward_topic:
+          label: 悬赏主题
+          desc: 新建一个悬赏主题
         reply_to_topic:
           label: 回复主题
           desc: 回复主题，不是任何特定的帖子
@@ -1987,6 +2014,8 @@ zh_CN:
         other: "本主题中的 %{count} 帖"
       create: "创建新主题"
       create_long: "创建新的主题"
+      create_reward_long: "创建新的悬赏主题"
+      reward_score: "【悬赏%{score}分】"
       open_draft: "打开草稿"
       private_message: "开始发私信"
       archive_message:
@@ -2432,6 +2461,9 @@ zh_CN:
         like: "点赞此帖"
         has_liked: "已赞"
         read_indicator: "阅读了帖子的用户"
+        best_reply: "最佳回复"
+        operation_only_one: "注意：您只能设置一个最佳回复并且不能修改及取消"
+        already_set_best_reply: "您已经设置过最佳回复了"
         undo_like: "取消赞"
         edit: "编辑本帖"
         edit_action: "编辑"

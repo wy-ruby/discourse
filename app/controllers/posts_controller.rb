@@ -657,6 +657,7 @@ class PostsController < ApplicationController
   def create_params
     permitted = [
       :raw,
+      :reward_integral,
       :topic_id,
       :archetype,
       :category,

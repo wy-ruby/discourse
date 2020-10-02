@@ -12,6 +12,7 @@ import discourseComputed, {
   on
 } from "discourse-common/utils/decorators";
 import { emailValid } from "discourse/lib/utilities";
+import { phoneNumberValid } from "discourse/lib/utilities";
 import PasswordValidation from "discourse/mixins/password-validation";
 import UsernameValidation from "discourse/mixins/username-validation";
 import NameValidation from "discourse/mixins/name-validation";
@@ -22,6 +23,7 @@ import EmberObject from "@ember/object";
 import User from "discourse/models/user";
 import { Promise } from "rsvp";
 import cookie, { removeCookie } from "discourse/lib/cookie";
+import jQuery from "jquery";
 
 export default Controller.extend(
   ModalFunctionality,
@@ -40,6 +42,7 @@ export default Controller.extend(
     prefilledUsername: null,
     userFields: null,
     isDeveloper: false,
+    usePhoneCreate: false,
 
     hasAuthOptions: notEmpty("authOptions"),
     canCreateLocal: setting("enable_local_logins"),
@@ -57,8 +60,14 @@ export default Controller.extend(
         accountEmail: "",
         accountUsername: "",
         accountPassword: "",
+        accountPhoneNumber: "",
+        usePhoneCreate: false,
+        accountCode: "",
         authOptions: null,
         complete: false,
+        codeSend: false,
+        clickSendCode: false,
+        canCreateLocalWithPhone: true,
         formSubmitted: false,
         rejectedEmails: [],
         rejectedPasswords: [],
@@ -74,6 +83,23 @@ export default Controller.extend(
 
       return false;
     },
+
+    @discourseComputed("canCreateLocalWithPhone")
+    showCreateWithPhoneLink(canCreateLocalWithPhone) {
+      return canCreateLocalWithPhone || true
+    },
+
+    @discourseComputed
+    showCreateWithEmailLink() {
+      return true
+    },
+
+    // @discourseComputed("codeSend")
+    // codeSend() {
+    //   if (this.codeSend) return true;
+    //
+    //   return false;
+    // },
 
     @discourseComputed("userFields", "hasAtLeastOneLoginButton")
     modalBodyClasses(userFields, hasAtLeastOneLoginButton) {
@@ -168,6 +194,30 @@ export default Controller.extend(
       );
     },
 
+    @discourseComputed("accountPhoneNumber")
+    phoneNumberValidation(phone_number){
+      const failedAttrs = {
+        failed: true,
+        element: document.querySelector("#new-account-phone-number")
+      };
+
+      if (phone_number != undefined && phone_number.length == 11) {
+        this.set("codeSend", false)
+        if (phoneNumberValid(phone_number)) {
+          return EmberObject.create({
+            ok: true,
+            reason: I18n.t("user.phone.ok")
+          });
+        } else {
+          return Object.assign(failedAttrs, {
+            reason: I18n.t("user.phone.invalid")
+          })
+        }
+      } else {
+        this.set("codeSend", true)
+      }
+    },
+
     @discourseComputed(
       "accountEmail",
       "authOptions.email",
@@ -259,6 +309,8 @@ export default Controller.extend(
       const attrs = this.getProperties(
         "accountName",
         "accountEmail",
+        "accountPhoneNumber",
+        "accountCode",
         "accountPassword",
         "accountUsername",
         "accountChallenge",
@@ -349,6 +401,59 @@ export default Controller.extend(
     actions: {
       externalLogin(provider) {
         this.login.send("externalLogin", provider);
+      },
+
+      sendAuthCode() {
+        this.set("clickSendCode", true)
+        const attrs = this.getProperties(
+          "accountPhoneNumber"
+        );
+
+        if (phoneNumberValid(attrs.accountPhoneNumber)) {
+          return User.sendCode(attrs).then(
+            result => {
+              this.set("codeSend", true);
+              if (result.success) {
+                let countdown=60;
+                let obj = $("#click-send-auth-code span");
+                function settime(obj) {
+                  if (countdown == 0) {
+                    obj.html(I18n.t("user.phone.send_code"));
+                    $("#click-send-auth-code").attr("disabled",false)
+                    countdown = 60;
+                    clearInterval(over_time)
+                    return;
+                  } else {
+                    // this.set("codeSend", true);
+                    obj.html(I18n.t("user.phone.send_again") + "(" + countdown + ")");
+                    countdown--;
+                  }
+                }
+                let over_time = setInterval(function(){
+                  settime(obj)
+                }, 1000)
+              } else {
+                this.set("codeSend", false);
+                removeCookie("destination_url");
+                return this.flash(result.messages);
+              }
+            },
+            () => {
+              this.set("codeSend", false);
+              removeCookie("destination_url");
+              return this.flash(I18n.t("create_account.send_error"), "error");
+            }
+          )
+        }
+
+      },
+
+      phoneCreate() {
+        this.set("usePhoneCreate", true);
+      },
+
+      emailCreate() {
+        this.set("usePhoneCreate", false);
       },
 
       createAccount() {

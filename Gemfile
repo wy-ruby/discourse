@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-source 'https://rubygems.org'
+source 'https://gems.ruby-china.com'
 # if there is a super emergency and rubygems is playing up, try
 #source 'http://production.cf.rubygems.org'
 
@@ -134,6 +134,8 @@ gem 'cbor', require: false
 gem 'cose', require: false
 gem 'addressable'
 
+gem 'aliyun-sms'
+
 # Gems used only for assets and not required in production environments by default.
 # Allow everywhere for now cause we are allowing asset debugging in production
 group :assets do
@@ -177,6 +179,7 @@ group :development do
   gem 'binding_of_caller'
   gem 'yaml-lint'
   gem 'annotate'
+  gem "web-console"
 end
 
 # this is an optional gem, it provides a high performance replacement

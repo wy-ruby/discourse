@@ -157,6 +157,10 @@ TopicList.reopenClass({
       groups = extractByKey(result.primary_groups, EmberObject);
 
     return result.topic_list[listKey].map(t => {
+      if (parseInt(t.reward_integral) > 0) {
+        t.fancy_title = "<span style='color:#43e3e1; font-weight:bold'>" +
+          I18n.t("topic.reward_score",{score: t.reward_integral}) + "</span>" + t.fancy_title
+      }
       t.category = categories.findBy("id", t.category_id);
       t.posters.forEach(p => {
         p.user = users[p.user_id];

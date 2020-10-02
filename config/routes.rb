@@ -393,6 +393,7 @@ Discourse::Application.routes.draw do
       end
 
       post "#{root_path}/second_factors" => "users#list_second_factors"
+      post "#{root_path}/send_code" => "users#send_auth_code"
       put "#{root_path}/second_factor" => "users#update_second_factor"
 
       post "#{root_path}/create_second_factor_security_key" => "users#create_second_factor_security_key"
@@ -799,6 +800,7 @@ Discourse::Application.routes.draw do
     post "t/:topic_id/move-posts" => "topics#move_posts", constraints: { topic_id: /\d+/ }
     post "t/:topic_id/merge-topic" => "topics#merge_topic", constraints: { topic_id: /\d+/ }
     post "t/:topic_id/change-owner" => "topics#change_post_owners", constraints: { topic_id: /\d+/ }
+    post "t/:topic_id/best_reply" => "topics#set_best_reply", constraints: { topic_id: /\d+/ }
     put "t/:topic_id/change-timestamp" => "topics#change_timestamps", constraints: { topic_id: /\d+/ }
     delete "t/:topic_id/timings" => "topics#destroy_timings", constraints: { topic_id: /\d+/ }
     put "t/:topic_id/bookmark" => "topics#bookmark", constraints: { topic_id: /\d+/ }
@@ -968,6 +970,10 @@ Discourse::Application.routes.draw do
     post "/push_notifications/unsubscribe" => "push_notification#unsubscribe"
 
     resources :csp_reports, only: [:create]
+
+    get "/integrals" => "integrals#show"
+    post "/integrals" => "integrals#update"
+    post "/update_user" => "integrals#update_user"
 
     get "/permalink-check", to: 'permalinks#check'
 

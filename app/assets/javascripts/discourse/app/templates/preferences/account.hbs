@@ -15,6 +15,17 @@
   {{/if}}
 </div>
 
+<div class="control-group pref-integrals">
+  <label class="control-label">{{i18n "user.username.integral"}} {{model.user_integral}}</label>
+</div>
+
+<!--<div class="control-group pref-integrals">-->
+<!--  <label class="control-label">{{i18n "user.username.phone_number"}}</label>-->
+<!--  <div class="controls">-->
+<!--    <span class="static">{{model.phone_number}}</span>-->
+<!--  </div>-->
+<!--</div>-->
+
 {{#unless siteSettings.sso_overrides_avatar}}
   <div class="control-group pref-avatar">
     <label class="control-label" id="profile-picture">{{i18n "user.avatar.title"}}</label>

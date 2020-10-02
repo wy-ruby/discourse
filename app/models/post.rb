@@ -129,6 +129,12 @@ class Post < ActiveRecord::Base
         )
   }
 
+  after_create do
+    unless topic.user_id == user.id && topic.posts_count == 0
+      Integral.increase_integral(user.id, topic.id, Integral::REPLY_TOPIC_SCORE, IntegralDetail.integral_get_way[:reply_topic], "reply")
+    end
+  end
+
   delegate :username, to: :user
 
   def self.hidden_reasons

@@ -26,6 +26,7 @@ import bootbox from "bootbox";
 
 // The actions the composer can take
 export const CREATE_TOPIC = "createTopic",
+  CREATE_REWARD_TOPIC = "createRewardTopic",
   CREATE_SHARED_DRAFT = "createSharedDraft",
   EDIT_SHARED_DRAFT = "editSharedDraft",
   PRIVATE_MESSAGE = "privateMessage",
@@ -47,6 +48,7 @@ const CLOSED = "closed",
   _create_serializer = {
     raw: "reply",
     title: "title",
+    reward_integral: "reward_integral",
     unlist_topic: "unlistTopic",
     category: "categoryId",
     topic_id: "topic.id",
@@ -93,6 +95,7 @@ export const SAVE_LABELS = {
   [EDIT]: "composer.save_edit",
   [REPLY]: "composer.reply",
   [CREATE_TOPIC]: "composer.create_topic",
+  [CREATE_REWARD_TOPIC]: "composer.create_topic",
   [PRIVATE_MESSAGE]: "composer.create_pm",
   [CREATE_SHARED_DRAFT]: "composer.create_shared_draft",
   [EDIT_SHARED_DRAFT]: "composer.save_edit"
@@ -103,12 +106,14 @@ export const SAVE_ICONS = {
   [EDIT_SHARED_DRAFT]: "far-clipboard",
   [REPLY]: "reply",
   [CREATE_TOPIC]: "plus",
+  [CREATE_REWARD_TOPIC]: "far-money",
   [PRIVATE_MESSAGE]: "envelope",
   [CREATE_SHARED_DRAFT]: "far-clipboard"
 };
 
 const Composer = RestModel.extend({
   _categoryId: null,
+  reward_score: 0,
   unlistTopic: false,
   noBump: false,
   draftSaving: false,
@@ -157,6 +162,7 @@ const Composer = RestModel.extend({
   creatingTopic: equal("action", CREATE_TOPIC),
   creatingSharedDraft: equal("action", CREATE_SHARED_DRAFT),
   creatingPrivateMessage: equal("action", PRIVATE_MESSAGE),
+  creatingRewardTopic: equal("action", CREATE_REWARD_TOPIC),
   notCreatingPrivateMessage: not("creatingPrivateMessage"),
   notPrivateMessage: not("privateMessage"),
 
@@ -175,6 +181,13 @@ const Composer = RestModel.extend({
   privateMessage(creatingPrivateMessage, topic) {
     return (
       creatingPrivateMessage || (topic && topic.archetype === "private_message")
+    );
+  },
+
+  @discourseComputed("creatingRewardTopic", "topic")
+  createRewardTopic(creatingRewardTopic, topic) {
+    return (
+      creatingRewardTopic || topic
     );
   },
 
@@ -253,6 +266,7 @@ const Composer = RestModel.extend({
 
   canEditTitle: or(
     "creatingTopic",
+    "creatingRewardTopic",
     "creatingPrivateMessage",
     "editingFirstPost",
     "creatingSharedDraft"
@@ -295,6 +309,11 @@ const Composer = RestModel.extend({
     return canEditTopicFeaturedLink
       ? "composer.title_or_link_placeholder"
       : "composer.title_placeholder";
+  },
+
+  @discourseComputed("canEditTopicFeaturedLink")
+  rewardPlaceholder() {
+    return  "composer.reward_placeholder";
   },
 
   @discourseComputed("action", "post", "topic", "topic.title")
@@ -1264,6 +1283,7 @@ Composer.reopenClass({
 
   // The actions the composer can take
   CREATE_TOPIC,
+  CREATE_REWARD_TOPIC,
   CREATE_SHARED_DRAFT,
   EDIT_SHARED_DRAFT,
   PRIVATE_MESSAGE,

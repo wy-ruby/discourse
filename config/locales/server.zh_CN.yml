@@ -125,6 +125,10 @@ zh_CN:
       too_long_validation: "最多只能有 %{max} 个字；你已经输入了 %{length} 个字。"
       invalid_boolean: "无效布尔值。"
       taken: "已经被采用"
+      phone_number_exist: 该手机号已经被注册了
+      send_code_error: 验证码发送错误，请稍后重试
+      frequent: 验证码发送可能存在延迟，请稍后再试
+      notfound: 该手机号未注册
       accepted: 必须被接受
       blank: 不能为空
       present: 必须为空
@@ -465,6 +469,7 @@ zh_CN:
               target_user_not_found: "未找到你要向其发送此消息的其中一个用户"
               unable_to_update: "更新该主题时发生错误。"
               unable_to_tag: "给主题设置标签时发生错误。"
+              reward_score_notenough: "抱歉，您的积分不足。"
             featured_link:
               invalid: "不合法。URL 应包括 http:// 或 https://。"
               invalid_category: "无法编辑该分类。"
@@ -2093,6 +2098,8 @@ zh_CN:
     security_key_invalid: "验证安全密钥时出错。"
     not_approved: "你的账户尚未获得批准。一旦你的账户获得批准，你会收到一封电子邮件。"
     incorrect_username_email_or_password: "用户名、电子邮箱或密码不正确"
+    incorrect_phone: "该手机号未注册"
+    incorrect_phone_or_code: "手机号或验证码不正确"
     incorrect_password: "密码错误"
     wait_approval: "谢谢注册账户。我们会在你的账户获得批准之后通知你。"
     active: "你的账户已经被激活，可以使用了。"
@@ -2120,6 +2127,8 @@ zh_CN:
     email_too_long: "你输入的邮件太长了。邮箱名不得超过 254 字符，域名必须不超过 253 字符。"
     wrong_invite_code: "你输入的邀请码不正确。"
     reserved_username: "该用户名不可被使用。"
+    verify_code_error: "验证码错误"
+    please_send_code: "验证码无效，请重新获取"
     missing_user_field: "你还没有填写完所有用户字段"
     auth_complete: "验证已经完成。"
     click_to_continue: "点击这里继续。"

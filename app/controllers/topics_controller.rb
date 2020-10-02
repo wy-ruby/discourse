@@ -925,6 +925,32 @@ class TopicsController < ApplicationController
     render body: nil
   end
 
+  def set_best_reply
+    params.require(:topic_id)
+    params.require(:post_id)
+    topic = Topic.find_by(id: params[:topic_id])
+    best_reply_uid = Post.find(params[:post_id]).try(:user_id)
+    if topic.accept_post_id.blank?
+      ActiveRecord::Base.transaction do
+        topic.accept_post_id = params[:post_id]
+        topic.save
+        if topic.reward_integral.present? && topic.reward_integral > 0
+          Integral.increase_integral_unconditional(best_reply_uid,
+                                                   topic.id,
+                                                   topic.reward_integral.to_i,
+                                                   IntegralDetail.integral_get_way[:acquire_reward])
+        end
+        Integral.increase_integral_unconditional(best_reply_uid,
+                                                 topic.id,
+                                                 Integral::BEST_REPLY_SCORE,
+                                                 IntegralDetail.integral_get_way[:best_answer])
+      end
+      render json: {msg: "success", code: 200}
+    else
+      render json: { errors: I18n.t("js.post.controls.already_set_best_reply") }
+    end
+  end
+
   private
 
   def topic_params

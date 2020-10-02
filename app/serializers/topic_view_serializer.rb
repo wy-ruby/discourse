@@ -40,7 +40,9 @@ class TopicViewSerializer < ApplicationSerializer
     :pinned_globally,
     :pinned_at,
     :pinned_until,
-    :image_url
+    :image_url,
+    :reward_integral,
+    :accept_post_id
   )
 
   attributes(

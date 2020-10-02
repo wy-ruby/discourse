@@ -273,20 +273,35 @@ class SessionController < ApplicationController
 
   def create
     params.require(:login)
-    params.require(:password)
+    is_phone_login = params.include?(:type) && params[:type] == "phone"
+    is_phone_login ? params.require(:code) : params.require(:password)
 
-    return invalid_credentials if params[:password].length > User.max_password_length
+    return invalid_credentials if params[:password].present? && params[:password].length > User.max_password_length
 
     login = params[:login].strip
     login = login[1..-1] if login[0] == "@"
+    if is_phone_login
+      user = User.find_by_phone_number(login)
+    else
+      user = User.find_by_username_or_email(login)
+    end
 
-    if user = User.find_by_username_or_email(login)
+    if user
 
       # If their password is correct
-      unless user.confirm_password?(params[:password])
-        invalid_credentials
-        return
+      if is_phone_login
+        session_verify_code = secure_session["login_#{login}"]
+        if session_verify_code.blank? || (session_verify_code.split("_").first != params[:code])
+          invalid_phone_or_code_credentials
+          return
+        end
+      else
+        unless user.confirm_password?(params[:password])
+          invalid_credentials
+          return
+        end
       end
+
 
       # If the site requires user approval and the user is not approved yet
       if login_not_approved_for?(user)
@@ -298,7 +313,7 @@ class SessionController < ApplicationController
       # from being used to log in (if one exists).
       Invite.invalidate_for_email(user.email)
     else
-      invalid_credentials
+      is_phone_login ? invalid_phone_credentials : invalid_credentials
       return
     end
 
@@ -499,6 +514,14 @@ class SessionController < ApplicationController
 
   def invalid_credentials
     render json: { error: I18n.t("login.incorrect_username_email_or_password") }
+  end
+
+  def invalid_phone_credentials
+    render json: { error: I18n.t("login.incorrect_phone") }
+  end
+
+  def invalid_phone_or_code_credentials
+    render json: { error: I18n.t("login.incorrect_phone_or_code") }
   end
 
   def login_not_approved

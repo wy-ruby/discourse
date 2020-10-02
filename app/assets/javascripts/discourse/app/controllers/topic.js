@@ -634,6 +634,26 @@ export default Controller.extend(bufferedProperty("model"), {
       }
     },
 
+    bestPost(post) {
+      bootbox.confirm(I18n.t("post.controls.operation_only_one"), result =>{
+        if (result) {
+          ajax(`/t/${post.topic.id}/best_reply`, {
+            data: { post_id: post.id },
+            type: "POST"
+          }).then(
+            data => {
+              console.log(data)
+              if (data.code == 200) {
+                window.location.reload()
+              } else {
+                bootbox.alert(data.errors)
+              }
+            }
+          );
+        }
+      });
+    },
+
     editPost(post) {
       if (!this.currentUser) {
         return bootbox.alert(I18n.t("post.controls.edit_anonymous"));
