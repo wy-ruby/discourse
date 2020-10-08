@@ -1,6 +1,6 @@
 Aliyun::Sms.configure do |config|
-  config.access_key_secret = "WrEf8z5WZGFMyIniNDz3x3Lcg9cmZL"  # 阿里云接入密钥，在阿里云控制台申请
-  config.access_key_id = "LTAI4G7KxoFMZjXKN75T9mr1" # 阿里云接入 ID, 在阿里云控制台申请
+  config.access_key_secret = ""  # 阿里云接入密钥，在阿里云控制台申请
+  config.access_key_id = "" # 阿里云接入 ID, 在阿里云控制台申请
   config.action = 'SendSms'                       # 默认设置
   config.format = 'JSON'                          # 短信推送返回信息格式，可以填写 'JSON'或者'XML'
   config.region_id = 'cn-hangzhou'                # 默认设置，如果没有特殊需要，可以不改
